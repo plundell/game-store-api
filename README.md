@@ -1,42 +1,45 @@
-# Slim Framework 4 Skeleton Application
+# Game Store API
 
-[![Coverage Status](https://coveralls.io/repos/github/slimphp/Slim-Skeleton/badge.svg?branch=master)](https://coveralls.io/github/slimphp/Slim-Skeleton?branch=master)
+An example of a stateless API, built on PHP and the [Slim Framework](https://www.slimframework.com/).
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 4 application. This application uses the latest Slim 4 with Slim PSR-7 implementation and PHP-DI container implementation. It also uses the Monolog logger.
+The API will provide a simple backend for an online video game store with the following capabilities:
+ - store portfolio of games with descriptions etc.
+ - keep track of inventory for those games
+ - enable placing orders for those games, warning about lack of inventory
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+Possible bonus features may include:
+ - allow users to register and login
+ - provide sales statistics of various kinds
+   - trending games
+   - trending genres
+   - often bought together (relies on registered users)
 
-## Install the Application
 
-Run this command from the directory in which you want to install your new Slim Framework application. You will require PHP 7.4 or newer.
+## Workflow
+- [x] Setup IDE and API framework
+  - [x] Remind self how PHP works, how it's configured, and how to setup projects
+  - [x] Configure VS Code with suitable extensions
+    - [x] Fight with language server which won't warn on unset variables until you realize that just applies to globally scoped variables
+  - [x] Find a suitable framework
+    - [x] Decide Laravel is too bloated and focused on MVC paradigm and backend rendered clients
+    - [x] Try what you think is it's little brother Lumen until you realize that's been discontinued and installing it seems to leave you in dependency conflict hell
+    - [x] Try this thing called Google and find [Slim Framework](https://www.slimframework.com/) who's website is exactly simple enough to convince you _yay, no overhead, just bare bones_.
+  - [x] Download _Slim_ and make sure it works
+    ```bash
+    $ composer create-project slim/slim-skeleton game-store-api 
+    $ cd game-store-api
+    $ composer start #open browser to localhost:8080 - success
+    #realize slim came with testing setup #winning
+    $ composer test 
+    ```
+- [ ] Go through existing codebase
+  - [ ] Understand the execution flow
+    - [ ] Add an endpoindpoint to make sure we understand
+  - [ ] Add comments and do basic resuffle (you know we'll have to)
+- [ ] Module: Persistence
+- [ ] Module: Inventory
+- [ ] Module: Orders
+- [ ] Module: Users
+- [ ] Module: Statistics
 
-```bash
-composer create-project slim/slim-skeleton [my-app-name]
-```
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
-
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writable.
-
-To run the application in development, you can run these commands 
-
-```bash
-cd [my-app-name]
-composer start
-```
-
-Or you can use `docker-compose` to run the app with `docker`, so you can run these commands:
-```bash
-cd [my-app-name]
-docker-compose up -d
-```
-After that, open `http://localhost:8080` in your browser.
-
-Run this command in the application directory to run the test suite
-
-```bash
-composer test
-```
-
-That's it! Now go build something cool.
