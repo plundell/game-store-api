@@ -18,14 +18,17 @@
     ```
 - [x] Go through existing codebase
   - [x] Understand the execution flow
-    - [ ] Add an endpoindpoint to make sure we understand
+    - [x] Add an endpoindpoint to make sure we understand
   - [x] Add comments and do basic resuffle (you know we'll have to)
-- [ ] Create settings combiner script to use for building
+- [x] Create routes combiner 
+- [x] Create autowiring combiner 
+- [ ] Create settings combiner
 - [ ] Module: Persistence
   - [ ] Create abstract persistence class
-  - [ ] Setup SQLite 
-    - [ ] Download, install blabla
-    - [ ] Write concrete subclass 
+  - [x] Get SQLite working
+    - [x] Download, install blabla
+    - [x] Write concrete subclass 
+  - [x] Start creating tables
   - [ ] Write short example MySQL subclass to demonstrate swapability
 - [ ] Module: Inventory
   - [ ] DB tables: studio, games, ledger

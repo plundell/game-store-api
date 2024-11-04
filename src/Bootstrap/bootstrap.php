@@ -122,17 +122,20 @@ class Bootstrap
         $this->container = $container;
     }
 
-    public static function gettype(mixed &$var): string
+
+    public static function gettype(&$var): string
     {
         ob_start();
         var_dump($var);
-        $str = ob_get_clean();
+        $str = ob_get_clean() ?: '';
+        $rm = __FILE__ . ":" . (string)(__LINE__ - 2) . ":\n";
+        $str = str_replace($rm, '', $str);
         return is_string($str) ? $str : 'unknown';
     }
 
-    public static function wrongtype(string $expected, mixed &$got): string
+    public static function wrongtype(string $expected,  &$got): string
     {
-        return "Expected $expected, got " . self::gettype($got);
+        return "Expected $expected, got:\n" . self::gettype($got);
     }
 
     /** 
