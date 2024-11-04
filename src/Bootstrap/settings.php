@@ -1,11 +1,16 @@
 <?php
+//TODO: split this appart into files in config dir
 
 declare(strict_types=1);
+
+
 
 use App\Application\Settings\Settings;
 use App\Application\Settings\SettingsInterface;
 use DI\ContainerBuilder;
 use Monolog\Logger;
+
+
 
 return function (ContainerBuilder $containerBuilder) {
 
@@ -13,12 +18,12 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SettingsInterface::class => function () {
             return new Settings([
-                'displayErrorDetails' => true, // Should be set to false in production
-                'logError'            => false,
-                'logErrorDetails'     => false,
+                'displayErrorDetails' => $_ENV['APP_ENV'] !== 'prod', //turn off in production
+                'logError'            => $_ENV['APP_ENV'] === 'prod', //turn on in production
+                'logErrorDetails'     => $_ENV['APP_ENV'] === 'prod', //turn on in production
                 'logger' => [
                     'name' => 'slim-app',
-                    'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
+                    'path' => isset($_ENV['docker']) ? 'php://stdout' : LOG_DIR . '/app.log',
                     'level' => Logger::DEBUG,
                 ],
             ]);
