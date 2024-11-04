@@ -28,7 +28,10 @@ define('CACHE_DIR', ROOT_DIR . '/var/cache/');
 define('LOG_DIR', ROOT_DIR . '/logs/');
 
 // Enable vendor autoloading
-require VENDOR_DIR . '/autoload.php';
+require_once VENDOR_DIR . 'autoload.php';
+
+// Include our custom autoloader to deal with files like SlimAppBootstrap.interface.php
+require_once BOOT_DIR . 'CustomAutoloader.php';
 
 
 //Then try to load the env file...
@@ -64,7 +67,7 @@ class Bootstrap
          * to delete the cache to see those changes. As such, whenever we run in dev we
          * empty the cache on each execution.
          * 
-         * NOTE we implement our own caching in routes.php which also relies on this 
+         * NOTE we implement our own caching in DynamicLoader.php which also relies on this 
          * emptying happening.
          */
         if ($_ENV['APP_ENV'] !== 'prod') {
@@ -78,12 +81,12 @@ class Bootstrap
             }
         }
 
-        //No enable compilation. In dev this will happen every time thanks to the above 
+        //Now enable compilation. In dev this will happen every time thanks to the above 
         //delete (which is good cause we'll know it works), and in prod it'll only happen
         //on first run.
         $containerBuilder->enableCompilation(CACHE_DIR);
 
-        // Prepare the container for building...
+
 
         (require constant('BOOT_DIR') . 'settings.php')($containerBuilder);
         (require constant('BOOT_DIR') . 'dependencies.php')($containerBuilder);
