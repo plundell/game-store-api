@@ -10,6 +10,7 @@ use Psr\Container\ContainerInterface;
 use Slim\Factory\AppFactory;
 use Slim\App;
 use App\Application\Settings\SettingsInterface;
+use \App\Bootstrap\Banan;
 
 /**
  * First define some paths.
@@ -123,6 +124,8 @@ class Bootstrap
         $this->settings = $settings;
         $this->app = $app;
         $this->container = $container;
+
+        $b = $container->get(Banan::class);
     }
 
 
