@@ -88,6 +88,7 @@ class Bootstrap
         (require constant('BOOT_DIR') . 'settings.php')($containerBuilder);
         (require constant('BOOT_DIR') . 'dependencies.php')($containerBuilder);
         (require constant('BOOT_DIR') . 'repositories.php')($containerBuilder);
+        (require constant('BOOT_DIR') . 'autowire.php')($containerBuilder);
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
