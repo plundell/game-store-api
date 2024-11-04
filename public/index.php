@@ -5,78 +5,48 @@ declare(strict_types=1);
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
-use App\Application\Settings\SettingsInterface;
-use DI\ContainerBuilder;
-use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
+use App\Bootstrap\Bootstrap;
 
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../src/Bootstrap/bootstrap.php';
 
-// Instantiate PHP-DI ContainerBuilder
-$containerBuilder = new ContainerBuilder();
+//devnote: wrap in function to avoid polluting global namespace and ensure 
+//          language server picks up on unset variables
+(function () {
 
-if (false) { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
-}
+    //Bootstrap the Slim application (including settings, env, vendor autoloading etc)
+    $x = Bootstrap::run();
 
-// Set up settings
-$settings = require __DIR__ . '/../app/settings.php';
-$settings($containerBuilder);
 
-// Set up dependencies
-$dependencies = require __DIR__ . '/../app/dependencies.php';
-$dependencies($containerBuilder);
+    // Create Request object from globals
+    $serverRequestCreator = ServerRequestCreatorFactory::create();
+    $request = $serverRequestCreator->createServerRequestFromGlobals();
 
-// Set up repositories
-$repositories = require __DIR__ . '/../app/repositories.php';
-$repositories($containerBuilder);
+    // Create Error Handler
+    $errorHandler = new HttpErrorHandler($x->app->getCallableResolver(), $x->app->getResponseFactory());
 
-// Build PHP-DI Container instance
-$container = $containerBuilder->build();
+    // Create Shutdown Handler
+    $shutdownHandler = new ShutdownHandler($request, $errorHandler, $x->settings->get('displayErrorDetails'));
+    register_shutdown_function($shutdownHandler);
 
-// Instantiate the app
-AppFactory::setContainer($container);
-$app = AppFactory::create();
-$callableResolver = $app->getCallableResolver();
+    // Add Routing Middleware
+    $x->app->addRoutingMiddleware();
 
-// Register middleware
-$middleware = require __DIR__ . '/../app/middleware.php';
-$middleware($app);
+    // Add Body Parsing Middleware
+    $x->app->addBodyParsingMiddleware();
 
-// Register routes
-$routes = require __DIR__ . '/../app/routes.php';
-$routes($app);
+    // Add Error Middleware
+    $errorMiddleware = $x->app->addErrorMiddleware(
+        $x->settings->get('displayErrorDetails'),
+        $x->settings->get('logError'),
+        $x->settings->get('logErrorDetails')
+    );
 
-/** @var SettingsInterface $settings */
-$settings = $container->get(SettingsInterface::class);
 
-$displayErrorDetails = $settings->get('displayErrorDetails');
-$logError = $settings->get('logError');
-$logErrorDetails = $settings->get('logErrorDetails');
+    $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
-// Create Request object from globals
-$serverRequestCreator = ServerRequestCreatorFactory::create();
-$request = $serverRequestCreator->createServerRequestFromGlobals();
-
-// Create Error Handler
-$responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
-
-// Create Shutdown Handler
-$shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);
-register_shutdown_function($shutdownHandler);
-
-// Add Routing Middleware
-$app->addRoutingMiddleware();
-
-// Add Body Parsing Middleware
-$app->addBodyParsingMiddleware();
-
-// Add Error Middleware
-$errorMiddleware = $app->addErrorMiddleware($displayErrorDetails, $logError, $logErrorDetails);
-$errorMiddleware->setDefaultErrorHandler($errorHandler);
-
-// Run App & Emit Response
-$response = $app->handle($request);
-$responseEmitter = new ResponseEmitter();
-$responseEmitter->emit($response);
+    // Run App & Emit Response
+    $response = $x->app->handle($request);
+    $responseEmitter = new ResponseEmitter();
+    $responseEmitter->emit($response);
+})();
