@@ -1,5 +1,6 @@
 <?php
-
+//TODO: rename this "set headers" or something and move it to live with the other bootstraping stuff
+//TODO: when moving^, make sure to change the comment in routes.php
 declare(strict_types=1);
 
 namespace App\Application\ResponseEmitter;
