@@ -19,7 +19,7 @@ use App\Application\Settings\SettingsInterface;
  * but I had issues earlier when I tried defining stuff after autoloading so
  * trying this for now...
  */
-define('BOOT_DIR', __DIR__);
+define('BOOT_DIR', __DIR__ . '/');
 define('ROOT_DIR', realpath(__DIR__ . '/../../'));
 define('SRC_DIR', ROOT_DIR . '/src/');
 define('CONFIG_DIR', ROOT_DIR . '/config/');
@@ -84,9 +84,10 @@ class Bootstrap
         $containerBuilder->enableCompilation(CACHE_DIR);
 
         // Prepare the container for building...
-        (require __DIR__ . '/settings.php')($containerBuilder);
-        (require __DIR__ . '/dependencies.php')($containerBuilder);
-        (require __DIR__ . '/repositories.php')($containerBuilder);
+
+        (require constant('BOOT_DIR') . 'settings.php')($containerBuilder);
+        (require constant('BOOT_DIR') . 'dependencies.php')($containerBuilder);
+        (require constant('BOOT_DIR') . 'repositories.php')($containerBuilder);
 
         // Build PHP-DI Container instance
         $container = $containerBuilder->build();
@@ -141,6 +142,7 @@ class Bootstrap
      */
     public static function run(): self
     {
+        //devnote: the way tests are currently setup we can't use a singleton here
         return new self();
     }
 }
