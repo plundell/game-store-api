@@ -8,4 +8,8 @@ interface Persistence
 {
     function getRecord(string $table, string $id): array;
     //TODO: maybe $id should be a domain object
+
+    function initialize(array $definition): self;
+
+    static function validateJsonSchema(array &$schema): void;
 }

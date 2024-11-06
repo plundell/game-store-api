@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Persistence;
 
-use App\Bootstrap\ContainerBootstrap;
+use App\Bootstrap\Interfaces\AutowireLoader;
 use DI\ContainerBuilder;
-use \App\Persistence\MySQL;
-use \App\Persistence\SQLite;
 use \App\Persistence\Persistence;
 
-return new class implements ContainerBootstrap {
+return new class implements AutowireLoader {
 
     public function __invoke(ContainerBuilder $containerBuilder): void
     {
@@ -18,10 +16,10 @@ return new class implements ContainerBootstrap {
         $type = strtolower($_ENV['PERSISTENCE_TYPE'] ?? 'sqlite');
         switch ($type) {
             case 'mysql':
-                $cls = MySQL::class;
+                $cls = \App\Persistence\MySQL::class;
                 break;
             case 'sqlite':
-                $cls = SQLite::class;
+                $cls = \App\Persistence\SQLite::class;
                 break;
             default:
                 throw new \LogicException(sprintf('Unknown PERSISTENCE_TYPE "%s"', $type));

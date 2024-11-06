@@ -1,0 +1,20 @@
+{
+    "tables": [
+        {
+            "name": "studios",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary": true,
+                    "autoincrement": true
+                },
+                {
+                    "name": "name",
+                    "type": "TEXT",
+                    "notnull": true
+                }
+            ]
+        }
+    ]
+}

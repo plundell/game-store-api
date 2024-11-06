@@ -1,0 +1,57 @@
+{
+    "tables": [
+        {
+            "name": "games",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "INTEGER",
+                    "primary": true,
+                    "autoincrement": true
+                },
+                {
+                    "name": "name",
+                    "type": "TEXT",
+                    "notnull": true
+                },
+                {
+                    "name": "studio_id",
+                    "type": "INTEGER",
+                    "notnull": true,
+                    "ref": "studios(id)"
+                },
+                {
+                    "name": "genre",
+                    "type": "TEXT",
+                    "notnull": true
+                },
+                {
+                    "name": "image",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "description",
+                    "type": "TEXT"
+                },
+                {
+                    "name": "rating",
+                    "type": "REAL"
+                },
+                {
+                    "name": "nr_sold",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "price",
+                    "type": "REAL",
+                    "notnull": true
+                },
+                {
+                    "name": "in_stock",
+                    "type": "INTEGER",
+                    "notnull": true
+                }
+            ]
+        }
+    ]
+}
