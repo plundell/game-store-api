@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions;
+namespace App\Common\Actions;
 
 use JsonSerializable;
 
-class ActionPayload implements JsonSerializable
+class ResponsePayload implements JsonSerializable
 {
     private int $statusCode;
 
@@ -45,7 +45,7 @@ class ActionPayload implements JsonSerializable
         return $this->error;
     }
 
-    #[\ReturnTypeWillChange]
+
     public function jsonSerialize(): array
     {
         $payload = [
@@ -59,5 +59,15 @@ class ActionPayload implements JsonSerializable
         }
 
         return $payload;
+    }
+
+    static public function json_encode_throw(...$args): string
+    {
+        $strOrFalse = json_encode(...$args);
+        if ($strOrFalse === false) {
+            throw new \JsonException(json_last_error_msg());
+        } else {
+            return (string) $strOrFalse;
+        }
     }
 }

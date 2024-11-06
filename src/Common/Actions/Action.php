@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions;
+namespace App\Common\Actions;
 
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -36,11 +36,7 @@ abstract class Action
         $this->response = $response;
         $this->args = $args;
 
-        try {
-            return $this->action();
-        } catch (DomainRecordNotFoundException $e) {
-            throw new HttpNotFoundException($this->request, $e->getMessage());
-        }
+        return $this->action();
     }
 
     /**
@@ -75,18 +71,18 @@ abstract class Action
      */
     protected function respondWithData($data = null, int $statusCode = 200): Response
     {
-        $payload = new ActionPayload($statusCode, $data);
+        $payload = new ResponsePayload($statusCode, $data);
 
         return $this->respond($payload);
     }
 
-    protected function respond(ActionPayload $payload): Response
+    protected function respond(ResponsePayload $payload): Response
     {
-        $json = json_encode($payload, JSON_PRETTY_PRINT);
+        $json = ResponsePayload::json_encode_throw($payload, JSON_PRETTY_PRINT);
         $this->response->getBody()->write($json);
 
         return $this->response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus($payload->getStatusCode());
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($payload->getStatusCode());
     }
 }

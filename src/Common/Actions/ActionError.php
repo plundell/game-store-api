@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions;
+namespace App\Common\Actions;
 
 use JsonSerializable;
 
@@ -50,7 +50,7 @@ class ActionError implements JsonSerializable
         return $this;
     }
 
-    #[\ReturnTypeWillChange]
+
     public function jsonSerialize(): array
     {
         return [
