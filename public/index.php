@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Application\Handlers\HttpErrorHandler;
-use App\Application\Handlers\ShutdownHandler;
-use App\Application\ResponseEmitter\ResponseEmitter;
+use App\Handlers\HttpErrorHandler;
+use App\Handlers\ShutdownHandler;
 use Slim\Factory\ServerRequestCreatorFactory;
 use App\Bootstrap\Bootstrap;
+use App\Common\Responder;
 
 require_once __DIR__ . '/../src/Bootstrap/bootstrap.php';
 
@@ -15,19 +15,22 @@ require_once __DIR__ . '/../src/Bootstrap/bootstrap.php';
 (function () {
 
     //Bootstrap the Slim application (including settings, env, vendor autoloading etc)
-    $x = Bootstrap::run();
+    $x = Bootstrap::app();
 
+    //Register all routes so we're able to handle requests
+    $x->registerRoutes();
 
-    // Create Request object from globals
-    $serverRequestCreator = ServerRequestCreatorFactory::create();
-    $request = $serverRequestCreator->createServerRequestFromGlobals();
+    //PHP gives access to the request via $_SERVER, but we want a fancy object, so create it
+    $request = ServerRequestCreatorFactory::create()->createServerRequestFromGlobals();
 
     // Create Error Handler
     $errorHandler = new HttpErrorHandler($x->app->getCallableResolver(), $x->app->getResponseFactory());
 
     // Create Shutdown Handler
-    $shutdownHandler = new ShutdownHandler($request, $errorHandler, $x->settings->get('displayErrorDetails'));
+    $shutdownHandler = new ShutdownHandler($request, $errorHandler, $x->settings);
     register_shutdown_function($shutdownHandler);
+
+
 
     // Add Routing Middleware
     $x->app->addRoutingMiddleware();
@@ -45,8 +48,11 @@ require_once __DIR__ . '/../src/Bootstrap/bootstrap.php';
 
     $errorMiddleware->setDefaultErrorHandler($errorHandler);
 
-    // Run App & Emit Response
+    //Now we're ready to handle the request
+
+    // Handle the request
     $response = $x->app->handle($request);
-    $responseEmitter = new ResponseEmitter();
-    $responseEmitter->emit($response);
+
+    //Send the reponse (this sets headers and everything)
+    Responder::respond($response, $x->settings);
 })();
