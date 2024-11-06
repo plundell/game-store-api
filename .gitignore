@@ -6,4 +6,4 @@
 !/logs/README.md
 .phpunit.result.cache
 *.code-workspace
-var/cache/**
+var/**
