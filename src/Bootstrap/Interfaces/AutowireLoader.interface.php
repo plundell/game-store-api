@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Bootstrap;
+namespace App\Bootstrap\Interfaces;
 
 use DI\ContainerBuilder;
 
@@ -14,7 +14,8 @@ use DI\ContainerBuilder;
  * container and what is registered on the app??
  */
 
-interface ContainerBootstrap
+interface AutowireLoader
+
 {
     public function __invoke(ContainerBuilder $containerBuilder): void;
 }
