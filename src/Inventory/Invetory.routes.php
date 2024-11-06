@@ -6,7 +6,7 @@ namespace App\Inventory;
 
 // require_once constant('BOOT_DIR') . '/RoutesFiles.interface.php';
 
-use App\Bootstrap\SlimAppBootstrap;
+use App\Bootstrap\Interfaces\RoutesLoader;
 use Slim\App;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,7 +14,7 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 
 
-return new class implements SlimAppBootstrap {
+return new class implements RoutesLoader {
 
     public function __invoke(App $app): void
     {
