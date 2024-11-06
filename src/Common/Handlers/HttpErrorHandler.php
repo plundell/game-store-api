@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handlers;
+namespace App\Handlers;
 
-use App\Application\Actions\ActionError;
-use App\Application\Actions\ActionPayload;
+use App\Common\Actions\ActionError;
+use App\Common\Actions\ResponsePayload;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpException;
@@ -58,8 +58,13 @@ class HttpErrorHandler extends SlimErrorHandler
             $error->setDescription($exception->getMessage());
         }
 
-        $payload = new ActionPayload($statusCode, null, $error);
+        $payload = new ResponsePayload($statusCode, null, $error);
+
         $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
+        if (!$encodedPayload) {
+            error_log("Failed to encode payload. " . json_last_error_msg());
+            $encodedPayload = "{}";
+        }
 
         $response = $this->responseFactory->createResponse($statusCode);
         $response->getBody()->write($encodedPayload);

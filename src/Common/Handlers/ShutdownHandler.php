@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handlers;
+namespace App\Handlers;
 
-use App\Application\ResponseEmitter\ResponseEmitter;
+use App\Common\Responder;
+use App\Common\Settings;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Exception\HttpInternalServerErrorException;
 
@@ -14,16 +15,16 @@ class ShutdownHandler
 
     private HttpErrorHandler $errorHandler;
 
-    private bool $displayErrorDetails;
+    private Settings $settings;
 
     public function __construct(
         Request $request,
         HttpErrorHandler $errorHandler,
-        bool $displayErrorDetails
+        Settings $settings
     ) {
         $this->request = $request;
         $this->errorHandler = $errorHandler;
-        $this->displayErrorDetails = $displayErrorDetails;
+        $this->settings = $settings;
     }
 
     public function __invoke()
@@ -36,7 +37,7 @@ class ShutdownHandler
             $errorType = $error['type'];
             $message = 'An error while processing your request. Please try again later.';
 
-            if ($this->displayErrorDetails) {
+            if ($this->settings->get('displayErrorDetails')) {
                 switch ($errorType) {
                     case E_USER_ERROR:
                         $message = "FATAL ERROR: {$errorMessage}. ";
@@ -62,13 +63,11 @@ class ShutdownHandler
             $response = $this->errorHandler->__invoke(
                 $this->request,
                 $exception,
-                $this->displayErrorDetails,
+                $this->settings->get('displayErrorDetails'),
                 false,
                 false,
             );
-
-            $responseEmitter = new ResponseEmitter();
-            $responseEmitter->emit($response);
+            Responder::respond($response);
         }
     }
 }
